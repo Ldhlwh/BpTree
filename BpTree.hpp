@@ -11,6 +11,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <thread>
+#include <utility>
 
 typedef int key_type;
 typedef value_t value_type;
@@ -20,7 +21,9 @@ class BpTree
 private:
 	bpt::bplus_tree *tree;
 	mutable std::shared_mutex treeMutex;
-	std::map<key_type, std::shared_mutex> mutexMap;
+	std::map<key_type, std::shared_mutex*> mutexMap;
+	
+	
 	
 public:
 	BpTree(const char* filename)
@@ -41,7 +44,7 @@ public:
 	
 	value_type get(const key_type & key)
 	{
-		std::shared_lock<std::shared_mutex> lock(mutexMap[key]);
+		std::shared_lock<std::shared_mutex> lock(*mutexMap[key]);
 		
 		value_type *p = new value_type("");
 		int temp = tree->search(key, p);
@@ -57,6 +60,11 @@ public:
 	{
 		std::unique_lock<std::shared_mutex> bigLock(treeMutex);
 		
+		std::shared_mutex *mtx = new std::shared_mutex;
+		
+		mutexMap.emplace(key, mtx);
+		std::unique_lock<std::shared_mutex> lock(*mtx);
+		
 		value_type *p = new value_type("");
 		int rtn = tree->search(key, p);
 		if(rtn == 0)
@@ -68,7 +76,7 @@ public:
 	
 	bool update(const key_type & key, const value_type & value)
 	{
-		std::unique_lock<std::shared_mutex> lock(mutexMap[key]);
+		std::unique_lock<std::shared_mutex> lock(*mutexMap[key]);
 		
 		value_type *p = new value_type("");
 		int rtn = tree->search(key, p);
@@ -82,12 +90,14 @@ public:
 	bool erase(const key_type & key)
 	{
 		std::unique_lock<std::shared_mutex> bigLock(treeMutex);
+		std::unique_lock<std::shared_mutex> lock(*mutexMap[key]);
 		
 		value_type *p = new value_type("");
 		int rtn = tree->search(key, p);
 		if(rtn == 0)
 		{
 			tree->remove(key);
+			mutexMap.erase(key);
 			return true;
 		}
 		else
