@@ -21,7 +21,7 @@ class BpTree
 private:
 	bpt::bplus_tree *tree;
 	mutable std::shared_mutex treeMutex;
-	std::map<key_type, std::shared_mutex*> mutexMap;
+	std::map<key_type, std::unique_ptr<std::shared_mutex>> mutexMap;
 	
 public:
 	BpTree(const char* filename)
@@ -58,7 +58,7 @@ public:
 	{
 		std::unique_lock<std::shared_mutex> bigLock(treeMutex);
 		
-		std::unique_ptr<std::shared_mutex> mtx = new std::shared_mutex;
+		std::shared_mutex *mtx = new std::shared_mutex;
 		
 		mutexMap.emplace(key, mtx);
 		std::unique_lock<std::shared_mutex> lock(*mtx);
