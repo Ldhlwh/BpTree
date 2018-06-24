@@ -1,0 +1,5 @@
+BpTree 更新记录
+
+2018.5.21
+	1.添加了析构函数
+	2.Manual中新增了关于修改 CMakeList.txt 的说明
