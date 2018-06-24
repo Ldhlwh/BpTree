@@ -4,10 +4,12 @@
 ## 更新记录
 
 ### 2018.5.21
+
 	1.添加了析构函数
 	2.Manual中新增了关于修改 CMakeList.txt 的说明
 	
 ### 2018.6.24
+
 	1.添加了多线程支持（c++17, mutex, shared_mutex, thread）
 	2.【重要】 API 用法有所变化，请务必关注！！！
 
@@ -30,10 +32,15 @@ value_type 为1024字节 char 型的包装，通过 .str 获得数据。
 
 ### BpTree (const char * filename)
 #### 描述:
+
 	构造函数。
+	
 #### 返回值： 
+
 	BpTree 实例。
+	
 #### 参数：
+
 	filename：
 		用于存储B+树数据的文件路径。
 		支持绝对路径。（e.g. C:\\Users\\admin\\Desktop\\BpTree.data）
@@ -45,51 +52,76 @@ value_type 为1024字节 char 型的包装，通过 .str 获得数据。
 		
 ### bool find(const key_type & key)
 #### 描述：
+
 	寻找 BpTree 中是否存在键为 key 的项。
+	
 #### 返回值：
+
 	true：存在。
 	false：不存在。
+	
 #### 参数：
+
 	key：用于寻找的键。
 	
 		
 ### value_type get(const key_type & key)
 #### 描述：
+
 	获取键为 key 的项的值。
 	【2018.6.24更新！！！】由于上锁原因，调用该函数前请先调用 find 确保记录存在。
+	
 #### 返回值：
+
 	value_type 实例，可用 .str 获取字符数组。
+	
 #### 参数：
+
 	key：用于获取的键。
 	
 	
 ### bool insert(const key_type & key, const value_type & value)
 #### 描述：
+
 	用来添加或更新项。
 	【2018.6.24更新！！！】由于上锁原因，该函数取消更新项功能，仅作为添加项。
+	
 #### 返回值：
+
 	true：操作成功。
+	
 #### 参数：
+
 	key：添加项或更新项的键。
 	value：添加项或更新项的值。
 	
 	
 ### 【2018.6.24更新！！！】bool update(const key_type & key, const value_type & value)
 #### 描述：
+
 	用来更新项，调用该函数前请先调用 find 确保记录存在。
+	
 #### 返回值：
+
 	true：操作成功。
+	
 #### 参数：
+
 	key：添加项或更新项的键。
 	value：添加项或更新项的值。
 	
 	
 ### bool erase(const key_type & key)
 #### 描述：
+
 	用来删除项。
+	
 #### 返回值：
+
 	true：操作成功。
 	false：不存在键为 key 的项。
+	
 #### 参数：
+
 	key：即将删除的项。
 	
